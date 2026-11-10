@@ -15,6 +15,8 @@
 
         html {
             scroll-behavior: smooth;
+            width: 1019px;
+            margin: 0 auto;
         }
 
         body {
@@ -217,6 +219,7 @@
             justify-content: center;
             padding: 5vh 5vw;
             background: #050505;
+            flex-direction: column;
         }
 
         .s2-grid {
@@ -278,18 +281,17 @@
         .img-w1 {
             align-self: flex-start;
             transform: rotate(-2deg);
-            margin-bottom: 5vh;
         }
 
         .img-w2 {
             align-self: center;
-            transform: translateX(10%) rotate(2deg);
-            margin-bottom: 5vh;
+            transform: translateX(10%) translateY(-10%) rotate(2deg);
+
         }
 
         .img-w3 {
             align-self: flex-end;
-            transform: rotate(-1deg) translateY(10%);
+            transform: rotate(-1deg) translateY(-10%);
         }
 
         /* S4 */
@@ -380,7 +382,7 @@
 
         /* S6 */
         #section-6 {
-            min-height: 100vh;
+            /* min-height: 100vh; */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -392,7 +394,7 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 5vw;
-            width: 100%;
+            width: 90%;
             max-width: 1200px;
         }
 
@@ -445,7 +447,7 @@
 
         .polaroid img {
             width: 100%;
-            height: 250px;
+            /* height: 250px; */
             object-fit: cover;
         }
 
@@ -574,14 +576,86 @@
         }
 
         @media (max-width: 768px) {
+            .hero-container {
+                padding: 40px 15px;
+                min-height: auto;
+            }
+
+            /* Top page all 9 puzzles in 2 column flex */
             .grid-container {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 12px;
+            }
+
+            /* Convert floating details to relative flow */
+            .section-title {
+                position: relative;
+                top: auto;
+                left: auto;
+                background: transparent;
+                backdrop-filter: none;
+                padding: 30px 20px 10px 20px;
+                margin: 0;
+                width: 100%;
+                box-sizing: border-box;
+                font-size: 1.4rem;
+            }
+
+            .section-desc-float {
+                max-width: 100%;
+                margin-top: 12px;
+                font-size: 1rem;
+                border-top: 1px solid rgba(0, 0, 0, 0.05);
+            }
+
+            /* Section Adjustment for relative titles */
+            .dynamic-section {
+                display: flex;
+                flex-direction: column;
+                min-height: auto !important;
+                padding: 0 0 50px 0 !important;
+            }
+
+            /* S1 Correction */
+            #section-1 {
+                padding-top: 0 !important;
             }
 
             .s1-bg {
-                width: 100%;
-                height: 100vh;
+                width: 90%;
+                aspect-ratio: 1;
+                /* Square for mobile fits better */
+                height: auto;
                 border-radius: 0;
+            }
+
+            .s1-overlay {
+                width: 35%;
+            }
+
+            .s1-img-1 {
+                top: 5%;
+                left: 5%;
+                transform: rotate(-3deg);
+            }
+
+            .s1-img-2 {
+                bottom: 0%;
+                right: 5%;
+                width: 40%;
+                transform: rotate(2deg);
+            }
+
+            .s1-img-3 {
+                top: 5%;
+                right: 5%;
+                width: 30%;
+                transform: rotate(5deg);
+            }
+
+            /* S2 adjustment */
+            #section-2 {
+                height: 400vh;
             }
 
             .s2-grid {
@@ -589,12 +663,36 @@
                 grid-template-rows: repeat(3, 25vh);
             }
 
-            #section-2 {
-                height: 400vh;
+            /* S3 staggered layout on mobile - picture each picture width 40% and keep desktop layout */
+            .weird-img {
+                width: 60% !important;
+                max-width: 100vw !important;
             }
 
+            .img-w1 {
+                align-self: flex-start !important;
+                transform: rotate(-2deg) translateX(5%) !important;
+            }
+
+            .img-w2 {
+                width: 80% !important;
+                align-self: center !important;
+                transform: rotate(2deg) !important;
+            }
+
+            .img-w3 {
+                align-self: flex-end !important;
+                transform: rotate(-1deg) translateY(-5%) translateX(-5%) !important;
+            }
+
+            .s3-container {
+                gap: 0 !important;
+            }
+
+            /* S4 adjustment */
             .s4-flex {
                 flex-direction: column;
+                gap: 20px;
             }
 
             .s4-left {
@@ -603,55 +701,91 @@
 
             .s4-middle {
                 max-width: 100%;
-                text-align: center;
+                text-align: left;
+                padding: 0 20px;
+                display: none;
+                /* Hide redundant text since header now shows it */
             }
 
+            .s5-sticky {
+                /* padding: 30% 0; */
+                /* flex-direction: column; */
+            }
+
+            .s5-scroll-wrapper img {
+                height: auto !important;
+            }
+
+            /* S6 adjustment */
             .s6-grid {
                 grid-template-columns: 1fr;
                 gap: 40px;
+                padding: 0px;
             }
 
             .s6-grid img {
                 transform: none !important;
             }
 
+            /* S7 polaroid 2-column flex on mobile */
+            #section-7 {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                padding: 10% 10px !important;
+                gap: 15px;
+                height: auto;
+                min-height: auto;
+                overflow: visible;
+            }
+
+            .polaroid {
+                position: relative !important;
+                width: 100% !important;
+                box-sizing: border-box;
+                transform: none !important;
+                margin: 0 !important;
+                top: auto !important;
+                left: auto !important;
+                padding: 10px 10px 40px 10px !important;
+            }
+
+            .polaroid img {
+                /* height: 150px !important; */
+            }
+
+            /* S8 adjustment */
             #section-8 {
                 flex-direction: column;
             }
 
             .s8-left {
+                width: 95%;
                 height: 50vh;
                 position: relative;
+                padding: 10px;
+
+                margin: 0 auto;
             }
 
+            .s8-right {
+                margin: 0 auto;
+                display: flex;
+                padding: 20px;
+                gap: 20px;
+                flex-direction: row;
+                flex: 0 0 50%;
+                flex-wrap: wrap;
+            }
+
+            .s8-right img {
+                width: 48%;
+            }
+
+            /* S9 adjustment */
             .s9-grid {
                 grid-template-columns: repeat(2, 1fr);
                 grid-auto-rows: 200px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .grid-container {
-                grid-template-columns: 1fr;
-            }
-
-            .weird-img {
-                max-width: 90%;
-                transform: none !important;
-                align-self: center !important;
-            }
-
-            .polaroid {
-                width: 220px;
-                position: relative;
-                transform: none !important;
-                margin: 15px auto;
-            }
-
-            #section-7 {
-                flex-direction: column;
-                height: auto;
-                padding: 60px 0;
+                padding: 10px;
             }
         }
     </style>
@@ -754,9 +888,9 @@
                 "https://images.unsplash.com/photo-1484502249930-e1da807099a5?w=700&q=80",
                 "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=700&q=80"],
             // S3: [img1, img2, img3]
-            ["https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80",
+            ["https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=800&q=80",
                 "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=800&q=80",
-                "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80"],
+                "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=800&q=80"],
             // S4: [1, 2, 3, 4]
             [
                 "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=600&q=80",
@@ -785,6 +919,7 @@
             ["https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=1000&q=80",
                 "https://images.unsplash.com/photo-1537832816519-689ad163238b?w=800&q=80",
                 "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=800&q=80",
+                "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800&q=80",
                 "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800&q=80"],
             // S9: [1..7]
             ["https://images.unsplash.com/photo-1495385703974-829f234470df?w=600&q=80",
@@ -855,6 +990,7 @@
                 <div class="s5-sticky">
                     <div class="section-title" style="background: rgba(255,255,255,0.9);"></div>
                     <div id="s5-wrapper" class="s5-scroll-wrapper">
+                        
                         ${section_images[4].map(url => `<img src="${url}" alt="5">`).join('')}
                     </div>
                 </div>
