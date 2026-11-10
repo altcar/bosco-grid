@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Outfit Puzzles Grid</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --accent-color: #ff3366;
+            --container-max-width: 1000px;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* --- Global Grid & Hero --- */
+        .hero-container {
+            width: 100%;
+            max-width: var(--container-max-width);
+            margin: 0 auto;
+            padding: 80px 20px;
+            box-sizing: border-box;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.8rem;
+            margin-bottom: 40px;
+            font-weight: 700;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .grid-item {
+            text-align: center;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .grid-item:hover {
+            transform: scale(1.05);
+        }
+
+        .grid-item img {
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            object-fit: cover;
+            border-radius: 8px;
+            display: block;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .grid-item .caption {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        /* Floating Section Descriptions */
+        .section-title {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            z-index: 20;
+            background: rgba(255, 255, 255, 0.85);
+            padding: 5px 12px;
+            border-radius: 4px;
+            backdrop-filter: blur(5px);
+        }
+
+        .section-desc-float {
+            display: block;
+            margin-top: 8px;
+            font-size: 0.85rem;
+            font-weight: 400;
+            color: #555;
+            max-width: 250px;
+            line-height: 1.5;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            padding-top: 8px;
+        }
+
+        /* --- Universal Tooltip (Desktop Hover & Mobile Tap) --- */
+        #floating-tooltip {
+            position: fixed;
+            pointer-events: none;
+            background: rgba(0, 0, 0, 0.9);
+            color: #fff;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            max-width: 260px;
+            z-index: 10000;
+            opacity: 0;
+            line-height: 1.4;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(6px);
+            font-weight: 500;
+        }
+
+        /* Mobile specific tooltip styling: Bottom fixed popup */
+        @media (max-width: 768px) {
+            #floating-tooltip {
+                left: 20px !important;
+                right: 20px !important;
+                bottom: 30px !important;
+                top: auto !important;
+                transform: translateY(20px);
+                max-width: none;
+                text-align: center;
+                pointer-events: auto;
+                /* allow clicking to close */
+            }
+
+            #floating-tooltip.active {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* --- Sections Core Layouts --- */
+        section {
+            position: relative;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* S1 */
+        #section-1 {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fcfcfc;
+        }
+
+        .s1-bg {
+            position: relative;
+            width: 80%;
+            aspect-ratio: 16 / 9;
+            background-size: cover;
+            background-position: center;
+            border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+        }
+
+        .s1-overlay {
+            position: absolute;
+            width: 25%;
+            aspect-ratio: 3/4;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            border: 4px solid #fff;
+            transition: transform 0.3s ease;
+        }
+
+        .s1-img-1 {
+            top: -10%;
+            left: -5%;
+            transform: rotate(-5deg);
+        }
+
+        .s1-img-2 {
+            bottom: -15%;
+            right: 5%;
+            transform: rotate(4deg);
+            width: 22%;
+        }
+
+        .s1-img-3 {
+            top: 15%;
+            right: -8%;
+            transform: rotate(8deg);
+            width: 20%;
+        }
+
+        /* S2 */
+        #section-2 {
+            height: 300vh;
+            background: #050505;
+        }
+
+        .s2-sticky {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5vh 5vw;
+            background: #050505;
+        }
+
+        .s2-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 40vh);
+            gap: 15px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .s2-cell {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+        .s2-cell img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .s2-cell .img-top {
+            z-index: 2;
+            opacity: 0;
+        }
+
+        /* S3 */
+        #section-3 {
+            min-height: 110vh;
+            display: flex;
+            flex-direction: column;
+            padding: 15vh 20px;
+            background: #fff;
+        }
+
+        .s3-container {
+            max-width: var(--container-max-width);
+            margin: 0 auto;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            width: 100%;
+        }
+
+        .weird-img {
+            max-width: 45%;
+            height: auto;
+            border-radius: 4px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .img-w1 {
+            align-self: flex-start;
+            transform: rotate(-2deg);
+            margin-bottom: 5vh;
+        }
+
+        .img-w2 {
+            align-self: center;
+            transform: translateX(10%) rotate(2deg);
+            margin-bottom: 5vh;
+        }
+
+        .img-w3 {
+            align-self: flex-end;
+            transform: rotate(-1deg) translateY(10%);
+        }
+
+        /* S4 */
+        #section-4 {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            background: #f4f4f4;
+            padding: 10vh 5vw;
+        }
+
+        .s4-flex {
+            display: flex;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .s4-left {
+            flex: 0.5;
+        }
+
+        .s4-middle {
+            flex: 1;
+            min-width: 200px;
+            max-width: 25%;
+        }
+
+        .s4-middle h2 {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            font-weight: 800;
+        }
+
+        .s4-middle p {
+            line-height: 1.6;
+            color: #444;
+        }
+
+        .s4-right {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            flex: 2;
+        }
+
+        .s4-right img {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: 6px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        /* S5 */
+        #section-5 {
+            height: 500vh;
+            background: #1a1a1a;
+        }
+
+        .s5-sticky {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+
+        .s5-scroll-wrapper {
+            display: flex;
+            gap: 5vw;
+            padding: 0 10vw;
+            will-change: transform;
+        }
+
+        .s5-scroll-wrapper img {
+            flex: 0 0 auto;
+            height: 70vh;
+            aspect-ratio: 3/4;
+            object-fit: cover;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+        }
+
+        /* S6 */
+        #section-6 {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            padding: 10vh 5vw;
+        }
+
+        .s6-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5vw;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .s6-grid img {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            transition: all 0.5s ease;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .s6-grid img:nth-child(1) {
+            border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+            transform: translateY(-20px);
+        }
+
+        .s6-grid img:nth-child(2) {
+            border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+            transform: scale(1.1) translateY(30px);
+        }
+
+        .s6-grid img:nth-child(3) {
+            border-radius: 30% 70% 50% 50% / 50% 50% 70% 50%;
+            transform: translateY(-10px);
+        }
+
+        .s6-grid img:hover {
+            border-radius: 50%;
+            transform: scale(1.05);
+        }
+
+        /* S7 */
+        #section-7 {
+            min-height: 100vh;
+            background: #eaeaea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .polaroid {
+            position: absolute;
+            background: #fff;
+            padding: 15px 15px 60px 15px;
+            width: 250px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+            transition: transform 0.4s ease;
+        }
+
+        .polaroid img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+
+        .polaroid .caption {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-family: monospace;
+            font-weight: bold;
+        }
+
+        .p1 {
+            transform: rotate(-12deg) translate(-150px, -80px);
+        }
+
+        .p2 {
+            transform: rotate(8deg) translate(50px, 100px);
+        }
+
+        .p3 {
+            transform: rotate(20deg) translate(200px, -50px);
+        }
+
+        .p4 {
+            transform: rotate(-5deg) translate(-80px, 150px);
+        }
+
+        .p5 {
+            transform: rotate(-25deg) translate(-250px, 80px);
+        }
+
+        .polaroid:hover {
+            transform: scale(1.15) rotate(0deg) !important;
+            z-index: 100;
+        }
+
+        /* S8 */
+        #section-8 {
+            display: flex;
+            background: #111;
+            color: #fff;
+        }
+
+        .s8-left {
+            flex: 1;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            padding: 30px;
+            box-sizing: border-box;
+        }
+
+        .s8-left img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+
+        .s8-right {
+            flex: 1;
+            padding: 10vh 5vw;
+            display: flex;
+            flex-direction: column;
+            gap: 50px;
+        }
+
+        .s8-right img {
+            width: 100%;
+            aspect-ratio: 4/3;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        /* S9 */
+        #section-9 {
+            min-height: 100vh;
+            padding: 5vh 2vw;
+            background: #fff;
+        }
+
+        .s9-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-auto-rows: 250px;
+            gap: 15px;
+        }
+
+        .s9-item {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 4px;
+            transition: filter 0.3s;
+        }
+
+        .s9-item:hover {
+            filter: grayscale(100%);
+        }
+
+        .s9-tall {
+            grid-row: span 2;
+        }
+
+        .s9-wide {
+            grid-column: span 2;
+        }
+
+        #backToTop {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #000;
+            color: #fff;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-weight: bold;
+            z-index: 1000;
+        }
+
+        @media (max-width: 768px) {
+            .grid-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .s1-bg {
+                width: 100%;
+                height: 100vh;
+                border-radius: 0;
+            }
+
+            .s2-grid {
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: repeat(3, 25vh);
+            }
+
+            #section-2 {
+                height: 400vh;
+            }
+
+            .s4-flex {
+                flex-direction: column;
+            }
+
+            .s4-left {
+                display: none;
+            }
+
+            .s4-middle {
+                max-width: 100%;
+                text-align: center;
+            }
+
+            .s6-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .s6-grid img {
+                transform: none !important;
+            }
+
+            #section-8 {
+                flex-direction: column;
+            }
+
+            .s8-left {
+                height: 50vh;
+                position: relative;
+            }
+
+            .s9-grid {
+                grid-template-columns: repeat(2, 1fr);
+                grid-auto-rows: 200px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+
+            .weird-img {
+                max-width: 90%;
+                transform: none !important;
+                align-self: center !important;
+            }
+
+            .polaroid {
+                width: 220px;
+                position: relative;
+                transform: none !important;
+                margin: 15px auto;
+            }
+
+            #section-7 {
+                flex-direction: column;
+                height: auto;
+                padding: 60px 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="floating-tooltip"></div>
+
+    <div id="top" class="hero-container">
+        <h1>puzzles of my outfits.</h1>
+        <div id="main-grid" class="grid-container"></div>
+    </div>
+
+    <!-- All sections are empty; JS will populate everything -->
+    <section id="section-1" class="dynamic-section" data-index="0"></section>
+    <section id="section-2" class="dynamic-section" data-index="1"></section>
+    <section id="section-3" class="dynamic-section" data-index="2"></section>
+    <section id="section-4" class="dynamic-section" data-index="3"></section>
+    <section id="section-5" class="dynamic-section" data-index="4"></section>
+    <section id="section-6" class="dynamic-section" data-index="5"></section>
+    <section id="section-7" class="dynamic-section" data-index="6"></section>
+    <section id="section-8" class="dynamic-section" data-index="7"></section>
+    <section id="section-9" class="dynamic-section" data-index="8"></section>
+
+    <a href="#top" id="backToTop">↑</a>
+
+    <script>
+        // --- CENTRAL DATA STORAGE ---
+        const href_links = ["#section-1", "#section-2", "#section-3", "#section-4", "#section-5", "#section-6", "#section-7", "#section-8", "#section-9"];
+
+        const href_title = [
+            "puzzle (1) - The Canvas",
+            "puzzle (2) - Fade Away",
+            "puzzle (3) - Staggered Limits",
+            "DETAILS", // Puzzle 4 Title (Moved from HTML)
+            "puzzle (5) - Endless Horizon",
+            "puzzle (6) - Organic Forms",
+            "puzzle (7) - Analog Memories",
+            "puzzle (8) - Split Narrative",
+            "puzzle (9) - Bento Collage"
+        ];
+
+        const href_description = [
+            "A massive backdrop emphasizing scale, sharply contrasted by scattered, playful foreground elements.",
+            "A sticky crossfade experience exploring the passage of time and layers through outfits.",
+            "A chaotic but highly calculated stagger, deliberately pushing the boundaries of typical web grids.",
+            "Exploring textures, layers, and unconventional silhouettes side by side.", // Puzzle 4 Desc (Moved from HTML)
+            "A cinematic horizontal scroll reminiscent of stepping through an old 35mm fashion film strip.",
+            "Trading rigid rectangles for soft, irregular shapes to create a gentle, continuous visual flow.",
+            "Physical media aesthetics, recreating the tangible joy of scattering loose polaroids on a tabletop.",
+            "A dual perspective: anchoring a sweeping hero image against a fast-scrolling column of close-ups.",
+            "A dense, maximalist bento-box collage celebrating clashing textures and unpredictable volume."
+        ];
+
+        const picture_descriptions = [
+            "Exploring textures, layers, and unconventional silhouettes side by side.", // S4 content integrated here too
+            "Geometric precision meeting fluid textile motion.",
+            "A study of volume and negative space within a single frame.",
+            "Capturing the raw essence of craftsmanship and fabric grain.",
+            "Muted tones with sharp, contrasting textures woven in.",
+            "A bold, unconventional silhouette that dominates the frame.",
+            "Subtle layering creates a deep, atmospheric dimension.",
+            "Vintage-inspired forms reconstructed for a modern layout.",
+            "Sleek and minimal—letting the confident posture speak.",
+            "Intentionally chaotic draping creates an artistic mess.",
+            "Heavy fabrics anchored by a singularly bright pop of color."
+        ];
+
+        // --- ALL IMAGE URLS MANAGED HERE ---
+        const grid_images = [
+            "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80",
+            "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=400&q=80",
+            "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80",
+            "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80",
+            "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80",
+            "https://images.unsplash.com/photo-1484502249930-e1da807099a5?w=400&q=80",
+            "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80",
+            "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80",
+            "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=400&q=80"
+        ];
+
+        const section_images = [
+            // S1: [bg, overlay1, overlay2, overlay3]
+            ["https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=1600&q=80",
+                "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80",
+                "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80",
+                "https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=500&q=80"],
+            // S2: [row1_base, row1_top, row2_base, row2_top, ...] (12 total)
+            ["https://images.unsplash.com/photo-1483985988355-763728e1935b?w=700&q=80",
+                "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=700&q=80",
+                "https://images.unsplash.com/photo-1492707892479-7bc8d5a4ee93?w=700&q=80",
+                "https://images.unsplash.com/photo-1581044777550-4cfa60707c03?w=700&q=80",
+                "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80",
+                "https://images.unsplash.com/photo-1516762689617-e1cffcef479d?w=700&q=80",
+                "https://images.unsplash.com/photo-1505022610485-0249ba5b3675?w=700&q=80",
+                "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80",
+                "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=700&q=80",
+                "https://images.unsplash.com/photo-1537832816519-689ad163238b?w=700&q=80",
+                "https://images.unsplash.com/photo-1484502249930-e1da807099a5?w=700&q=80",
+                "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=700&q=80"],
+            // S3: [img1, img2, img3]
+            ["https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80",
+                "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=800&q=80",
+                "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80"],
+            // S4: [1, 2, 3, 4]
+            [
+                "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=600&q=80",
+                "https://images.unsplash.com/photo-1495385703974-829f234470df?w=600&q=80",
+                "https://images.unsplash.com/photo-1542295652-64ae3496ebfe?w=600&q=80",
+                "https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?w=600&q=80"
+            ],
+            // S5: [1, 2, 3, 4, 5, 6]
+            ["https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=900&q=80",
+                "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=900&q=80",
+                "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80",
+                "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=900&q=80",
+                "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=900&q=80",
+                "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80"],
+            // S6: [1, 2, 3]
+            ["https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&q=80",
+                "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80",
+                "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80"],
+            // S7: [1, 2, 3, 4, 5]
+            ["https://images.unsplash.com/photo-1484502249930-e1da807099a5?w=500&q=80",
+                "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80",
+                "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80",
+                "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=500&q=80",
+                "https://images.unsplash.com/photo-1516762689617-e1cffcef479d?w=500&q=80"],
+            // S8: [hero, detail1, detail2, detail3]
+            ["https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=1000&q=80",
+                "https://images.unsplash.com/photo-1537832816519-689ad163238b?w=800&q=80",
+                "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=800&q=80",
+                "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800&q=80"],
+            // S9: [1..7]
+            ["https://images.unsplash.com/photo-1495385703974-829f234470df?w=600&q=80",
+                "https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?w=500&q=80",
+                "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=800&q=80",
+                "https://images.unsplash.com/photo-1445205170230-053b830c6050?w=500&q=80",
+                "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=600&q=80",
+                "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=500&q=80",
+                "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800&q=80"]
+        ];
+
+        // --- DOM GENERATION ---
+
+        // Populate Main Grid
+        const mainGrid = document.getElementById('main-grid');
+        for (let i = 0; i < 9; i++) {
+            const a = document.createElement('a');
+            a.href = href_links[i];
+            a.className = 'grid-item';
+            a.innerHTML = `<img src="${grid_images[i]}" alt="Grid ${i + 1}"><div class="caption">(${i + 1})</div>`;
+            mainGrid.appendChild(a);
+        }
+
+        // Section Content Generator
+        const populateSections = () => {
+            // S1
+            const s1 = document.getElementById('section-1');
+            s1.innerHTML = `
+                <div class="section-title"></div>
+                <div class="s1-bg" style="background-image: url('${section_images[0][0]}')">
+                    <img class="s1-overlay s1-img-1" src="${section_images[0][1]}" alt="1">
+                    <img class="s1-overlay s1-img-2" src="${section_images[0][2]}" alt="2">
+                    <img class="s1-overlay s1-img-3" src="${section_images[0][3]}" alt="3">
+                </div>
+            `;
+            // S2
+            const s2 = document.getElementById('section-2');
+            let s2Cells = '';
+            for (let i = 0; i < 6; i++) {
+                s2Cells += `<div class="s2-cell"><img src="${section_images[1][i * 2]}" alt="B"><img class="img-top" src="${section_images[1][i * 2 + 1]}" alt="T"></div>`;
+            }
+            s2.innerHTML = `<div class="s2-sticky"><div class="section-title" style="background: rgba(255,255,255,0.95);"></div><div class="s2-grid">${s2Cells}</div></div>`;
+            // S3
+            const s3 = document.getElementById('section-3');
+            s3.innerHTML = `
+                <div class="section-title"></div>
+                <div class="s3-container">
+                    <img class="weird-img img-w1" src="${section_images[2][0]}" alt="W1">
+                    <img class="weird-img img-w2" src="${section_images[2][1]}" alt="W2">
+                    <img class="weird-img img-w3" src="${section_images[2][2]}" alt="W3">
+                </div>
+            `;
+            // S4
+            const s4 = document.getElementById('section-4');
+            s4.innerHTML = `
+                <div class="section-title"></div>
+                <div class="s4-flex">
+                    <div class="s4-left"></div>
+                    <div class="s4-middle"><h2></h2><p></p></div>
+                    <div class="s4-right">
+                        ${section_images[3].map(url => `<img src="${url}" alt="4">`).join('')}
+                    </div>
+                </div>
+            `;
+            // S5
+            const s5 = document.getElementById('section-5');
+            s5.innerHTML = `
+                <div class="s5-sticky">
+                    <div class="section-title" style="background: rgba(255,255,255,0.9);"></div>
+                    <div id="s5-wrapper" class="s5-scroll-wrapper">
+                        ${section_images[4].map(url => `<img src="${url}" alt="5">`).join('')}
+                    </div>
+                </div>
+            `;
+            // S6
+            const s6 = document.getElementById('section-6');
+            s6.innerHTML = `
+                <div class="section-title"></div>
+                <div class="s6-grid">
+                    ${section_images[5].map(url => `<img src="${url}" alt="6">`).join('')}
+                </div>
+            `;
+            // S7
+            const s7 = document.getElementById('section-7');
+            s7.innerHTML = `
+                <div class="section-title"></div>
+                ${section_images[6].map((url, i) => `<div class="polaroid p${i + 1}"><img src="${url}" alt="P"><div class="caption">#0${i + 1}</div></div>`).join('')}
+            `;
+            // S8
+            const s8 = document.getElementById('section-8');
+            s8.innerHTML = `
+                <div class="section-title" style="z-index:100;"></div>
+                <div class="s8-left"><img src="${section_images[7][0]}" alt="8H"></div>
+                <div class="s8-right">${section_images[7].slice(1).map(url => `<img src="${url}" alt="8D">`).join('')}</div>
+            `;
+            // S9
+            const s9 = document.getElementById('section-9');
+            s9.innerHTML = `
+                <div class="section-title"></div>
+                <div class="s9-grid">
+                    <img class="s9-item s9-tall" src="${section_images[8][0]}">
+                    <img class="s9-item" src="${section_images[8][1]}">
+                    <img class="s9-item s9-wide" src="${section_images[8][2]}">
+                    <img class="s9-item" src="${section_images[8][3]}">
+                    <img class="s9-item s9-tall" src="${section_images[8][4]}">
+                    <img class="s9-item" src="${section_images[8][5]}">
+                    <img class="s9-item s9-wide" src="${section_images[8][6]}">
+                </div>
+            `;
+        };
+        populateSections();
+
+        // Inject Dynamic Metadata (Titles/Descs)
+        const updateMetadata = () => {
+            document.querySelectorAll('.dynamic-section').forEach(section => {
+                const idx = parseInt(section.getAttribute('data-index'));
+                const titleBlock = section.querySelector('.section-title');
+                if (titleBlock) {
+                    titleBlock.textContent = href_title[idx];
+                    const d = document.createElement('span');
+                    d.className = 'section-desc-float';
+                    d.textContent = href_description[idx];
+                    titleBlock.appendChild(d);
+                }
+                // Special S4 Text Injection
+                if (idx === 3) {
+                    section.querySelector('.s4-middle h2').textContent = href_title[idx];
+                    section.querySelector('.s4-middle p').textContent = href_description[idx];
+                }
+            });
+        };
+        updateMetadata();
+
+        // --- INTERACTIVE TOOLTIP (Mobile/Desktop) ---
+        const tooltip = document.getElementById('floating-tooltip');
+        let tooltipActive = false;
+
+        const handleImgPointer = (e, img, desc) => {
+            const isMobile = window.innerWidth <= 768;
+
+            if (!isMobile) {
+                // Desktop Hover
+                let x = e.clientX + 15;
+                let y = e.clientY + 15;
+                if (x + 260 > window.innerWidth) x = e.clientX - 275;
+                if (y + 80 > window.innerHeight) y = e.clientY - 95;
+                tooltip.style.left = x + 'px';
+                tooltip.style.top = y + 'px';
+                tooltip.style.opacity = 1;
+                tooltip.textContent = `Note: ${desc}`;
+            } else {
+                // Mobile Tap Interaction
+                e.stopPropagation();
+                tooltip.textContent = `Note: ${desc}`;
+                tooltip.classList.add('active');
+                tooltipActive = true;
+            }
+        };
+
+        const hideTooltip = () => {
+            tooltip.style.opacity = 0;
+            tooltip.classList.remove('active');
+            tooltipActive = false;
+        };
+
+        document.querySelectorAll('img').forEach((img, i) => {
+            const desc = picture_descriptions[i % picture_descriptions.length];
+            img.style.cursor = 'help';
+            img.addEventListener('mousemove', (e) => handleImgPointer(e, img, desc));
+            img.addEventListener('mouseleave', hideTooltip);
+            img.addEventListener('touchstart', (e) => handleImgPointer(e, img, desc));
+        });
+
+        // Close mobile tooltip when tapping elsewhere
+        window.addEventListener('touchstart', (e) => { if (tooltipActive) hideTooltip(); });
+
+        // --- SCROLL ENGINE ---
+        window.addEventListener('scroll', () => {
+            const pos = window.pageYOffset;
+            const h = window.innerHeight;
+
+            const s2 = document.getElementById('section-2');
+            if (s2) {
+                const s2Top = s2.offsetTop;
+                const s2Height = s2.offsetHeight;
+                if (pos >= s2Top && pos <= s2Top + s2Height) {
+                    let prog = (pos - s2Top) / (s2Height - h);
+                    s2.querySelectorAll('.img-top').forEach(img => img.style.opacity = Math.max(0, Math.min(1, prog)));
+                }
+            }
+
+            const s5 = document.getElementById('section-5');
+            const wrap = document.getElementById('s5-wrapper');
+            if (s5 && wrap) {
+                const s5Top = s5.offsetTop;
+                const s5Height = s5.offsetHeight;
+                if (pos >= s5Top && pos <= s5Top + s5Height) {
+                    let prog = Math.max(0, Math.min(1, (pos - s5Top) / (s5Height - h)));
+                    wrap.style.transform = `translateX(${-prog * (wrap.scrollWidth - window.innerWidth)}px)`;
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
