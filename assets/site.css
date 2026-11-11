@@ -381,6 +381,7 @@ a {
 .index {
     padding-top: clamp(16px, 3vh, 28px);
     padding-bottom: clamp(52px, 9vh, 104px);
+    scroll-margin-top: 76px;
 }
 
 .index-head {
@@ -436,8 +437,10 @@ a {
     transition: transform 0.8s var(--ease);
 }
 
-.tile:hover img {
-    transform: scale(1.045);
+@media (hover: hover) {
+    .tile:hover img {
+        transform: scale(1.045);
+    }
 }
 
 .tile-caption {
@@ -815,8 +818,10 @@ a {
     transform: translateY(-4px) rotate(1deg);
 }
 
-.organic img:hover {
-    border-radius: 50%;
+@media (hover: hover) {
+    .organic img:hover {
+        border-radius: 50%;
+    }
 }
 
 /* Puzzle 7 — polaroids */
@@ -884,9 +889,11 @@ a {
     transform: rotate(-12deg);
 }
 
-.polaroid:hover {
-    transform: rotate(0deg) scale(1.06);
-    z-index: 5;
+@media (hover: hover) {
+    .polaroid:hover {
+        transform: rotate(0deg) scale(1.06);
+        z-index: 5;
+    }
 }
 
 /* Puzzle 8 — split */
@@ -1005,6 +1012,7 @@ a {
     padding: clamp(54px, 9vh, 100px) 0;
     border-top: 1px solid var(--line);
     background: var(--surface);
+    scroll-margin-top: 76px;
 }
 
 .about-inner {
@@ -1618,9 +1626,5 @@ a {
 @media (hover: none) {
     .strip-btn {
         display: none;
-    }
-
-    .polaroid:hover {
-        transform: inherit;
     }
 }
